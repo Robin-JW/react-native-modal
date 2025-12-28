@@ -10,11 +10,6 @@
   "scripts": {
     "test": "yarn run lint"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "pretty-quick --staged"
-    }
-  },
   "keywords": [
     "react-native",
     "react",
