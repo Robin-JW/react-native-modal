@@ -2,16 +2,13 @@
   "name": "react-native-modal",
   "version": "14.0.0-rc.1",
   "description": "An enhanced React Native modal",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "src/index",
+  "types": "src/index",
   "files": [
     "dist/"
   ],
   "scripts": {
-    "test": "yarn run lint",
-    "build": "tsc",
-    "dev": "tsc --watch",
-    "test:ts": "tsc --noEmit"
+    "test": "yarn run lint"
   },
   "husky": {
     "hooks": {
@@ -40,7 +37,7 @@
     "url": "https://github.com/react-native-modal/react-native-modal"
   },
   "dependencies": {
-    "react-native-animatable": "1.4.0"
+    "react-native-reanimated": "3.19.5"
   },
   "devDependencies": {
     "@types/react": "^19.0.10",
@@ -49,7 +46,7 @@
     "prettier": "^1.18.2",
     "pretty-quick": "^2.0.0",
     "react": "19.0.0",
-    "react-native": "0.76.7",
+    "react-native": "0.81.0",
     "typescript": "5.8.2"
   },
   "peerDependencies": {

@@ -13,7 +13,6 @@ const noopBackHandler: BackHandlerStatic = {
   ): NativeEventSubscription {
     return { remove: () => {} };
   },
-  removeEventListener: () => {},
 };
 
 export const BackHandler: BackHandlerStatic =

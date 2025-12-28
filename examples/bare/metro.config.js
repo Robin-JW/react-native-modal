@@ -1,7 +1,24 @@
 const path = require('path');
-const {makeMetroConfig} = require('@rnx-kit/metro-config');
+const { getDefaultConfig, mergeConfig } = require('@react-native/metro-config');
 
-module.exports = makeMetroConfig({
+const root = path.resolve(__dirname, '../..');
+const defaultConfig = getDefaultConfig(__dirname);
+const defaultBlockList = defaultConfig.resolver.blockList;
+
+const modulesToBlock = [
+  new RegExp(`${root}/node_modules/react/.*`),
+  new RegExp(`${root}/node_modules/react-native/.*`),
+  new RegExp(`${root}/node_modules/@react-native/.*`),
+];
+
+const newBlockList = new RegExp(
+  '(' +
+    (defaultBlockList ? defaultBlockList.source + '|' : '') +
+    modulesToBlock.map(regexp => regexp.source).join('|') +
+    ')',
+);
+
+const config = {
   transformer: {
     getTransformOptions: async () => ({
       transform: {
@@ -13,11 +30,17 @@ module.exports = makeMetroConfig({
   resolver: {
     enableSymlinks: true,
     extraNodeModules: {
-      'react-native-modal': path.resolve(__dirname, '../../dist/'),
+      'react-native-modal': root,
+      react: path.resolve(__dirname, 'node_modules/react'),
+      'react-native': path.resolve(__dirname, 'node_modules/react-native'),
     },
+    blockList: newBlockList,
+    nodeModulesPaths: [
+      path.resolve(__dirname, 'node_modules'),
+      path.resolve(__dirname, '../../node_modules'),
+    ],
   },
-  watchFolders: [
-    path.join(__dirname, 'node_modules', 'react-native-modal'),
-    path.resolve(__dirname, '../..'),
-  ],
-});
+  watchFolders: [root],
+};
+
+module.exports = mergeConfig(defaultConfig, config);

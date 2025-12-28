@@ -32,6 +32,28 @@ The goal of `react-native-modal` is expanding the original React Native `<Modal>
 
 This library is available on npm, install it with: `npm i react-native-modal` or `yarn add react-native-modal`.
 
+Since this library depends on `react-native-reanimated`, you must also install it and configure the babel plugin.
+See [Reanimated installation guide](https://docs.swmansion.com/react-native-reanimated/docs/fundamentals/getting-started).
+
+1. Install dependencies:
+
+```bash
+yarn add react-native-modal react-native-reanimated
+```
+
+2. Add the Reanimated plugin to your `babel.config.js`:
+
+```javascript
+module.exports = {
+  presets: [
+    ...
+  ],
+  plugins: [
+    'react-native-reanimated/plugin',
+  ],
+};
+```
+
 ## Usage
 
 Since `react-native-modal` is an extension of the [original React Native modal](https://reactnative.dev/docs/modal.html), it works in a similar fashion.
@@ -49,7 +71,7 @@ function WrapperComponent() {
   return (
     <View>
       <Modal>
-        <View style={{flex: 1}}>
+        <View style={{ flex: 1 }}>
           <Text>I am the modal content!</Text>
         </View>
       </Modal>
@@ -65,7 +87,7 @@ function WrapperComponent() {
   return (
     <View>
       <Modal isVisible={true}>
-        <View style={{flex: 1}}>
+        <View style={{ flex: 1 }}>
           <Text>I am the modal content!</Text>
         </View>
       </Modal>
@@ -84,8 +106,8 @@ Pressing the button sets `isModalVisible` to true, making the modal visible.
 Inside the modal there is another button that, when pressed, sets `isModalVisible` to false, hiding the modal.
 
 ```javascript
-import React, {useState} from 'react';
-import {Button, Text, View} from 'react-native';
+import React, { useState } from 'react';
+import { Button, Text, View } from 'react-native';
 import Modal from 'react-native-modal';
 
 function ModalTester() {
@@ -96,11 +118,11 @@ function ModalTester() {
   };
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <Button title="Show modal" onPress={toggleModal} />
 
       <Modal isVisible={isModalVisible}>
-        <View style={{flex: 1}}>
+        <View style={{ flex: 1 }}>
           <Text>Hello!</Text>
 
           <Button title="Hide modal" onPress={toggleModal} />
@@ -152,8 +174,8 @@ For a more complex example take a look at the `/example` directory.
 | `scrollHorizontal`               | `bool`               | `false`                          | Set to true if your scrollView is horizontal (for a correct scroll handling)                                                               |
 | `swipeThreshold`                 | `number`             | `100`                            | Swiping threshold that when reached calls `onSwipeComplete`                                                                                |
 | `swipeDirection`                 | `string` or `array`  | `null`                           | Defines the direction where the modal can be swiped. Can be 'up', 'down', 'left, or 'right', or a combination of them like `['up','down']` |
-| `useNativeDriver`                | `bool`               | `false`                          | Defines if animations should use native driver                                                                                             |
-| `useNativeDriverForBackdrop`     | `bool`               | `null`                           | Defines if animations for backdrop should use native driver (to avoid flashing on android)                                                 |
+| `useNativeDriver`                | `bool`               | `false`                          | **Deprecated** (Ignored with Reanimated)                                                                                                   |
+| `useNativeDriverForBackdrop`     | `bool`               | `null`                           | **Deprecated** (Ignored with Reanimated)                                                                                                   |
 | `hideModalContentWhileAnimating` | `bool`               | `false`                          | Enhances the performance by hiding the modal content until the animations complete                                                         |
 | `propagateSwipe`                 | `bool` or `func`     | `false`                          | Allows swipe events to propagate to children components (eg a ScrollView inside a modal)                                                   |
 | `style`                          | `any`                | `null`                           | Style applied to the modal                                                                                                                 |
@@ -188,7 +210,7 @@ function WrapperComponent() {
       isVisible={isModalVisible}
       deviceWidth={deviceWidth}
       deviceHeight={deviceHeight}>
-      <View style={{flex: 1}}>
+      <View style={{ flex: 1 }}>
         <Text>I am the modal content!</Text>
       </View>
     </Modal>
@@ -204,7 +226,7 @@ The prop `onBackdropPress` allows you to handle this situation:
 <Modal
   isVisible={isModalVisible}
   onBackdropPress={() => setModalVisible(false)}>
-  <View style={{flex: 1}}>
+  <View style={{ flex: 1 }}>
     <Text>I am the modal content!</Text>
   </View>
 </Modal>
@@ -219,7 +241,7 @@ The prop `onSwipeComplete` allows you to handle this situation (remember to set 
   isVisible={isModalVisible}
   onSwipeComplete={() => setModalVisible(false)}
   swipeDirection="left">
-  <View style={{flex: 1}}>
+  <View style={{ flex: 1 }}>
     <Text>I am the modal content!</Text>
   </View>
 </Modal>
@@ -265,7 +287,7 @@ The modal style applied by default has a small margin.
 If you want the modal to cover the entire screen you can easily override it this way:
 
 ```js
-<Modal style={{margin: 0}}>...</Modal>
+<Modal style={{ margin: 0 }}>...</Modal>
 ```
 
 ### I can't scroll my ScrollView inside of the modal
@@ -289,8 +311,8 @@ Also, some users have noticed that setting backdropTransitionOutTiming={0} can f
 You need to specify the size of your custom backdrop component. You can also make it expand to fill the entire screen by adding a `flex: 1` to its style:
 
 ```javascript
-<Modal isVisible={isModalVisible} customBackdrop={<View style={{flex: 1}} />}>
-  <View style={{flex: 1}}>
+<Modal isVisible={isModalVisible} customBackdrop={<View style={{ flex: 1 }} />}>
+  <View style={{ flex: 1 }}>
     <Text>I am the modal content!</Text>
   </View>
 </Modal>
@@ -305,7 +327,7 @@ You can provide an event handler to the custom backdrop element to dismiss the m
   isVisible={isModalVisible}
   customBackdrop={
     <TouchableWithoutFeedback onPress={dismissModalHandler}>
-      <View style={{flex: 1}} />
+      <View style={{ flex: 1 }} />
     </TouchableWithoutFeedback>
   }
 />
@@ -313,7 +335,26 @@ You can provide an event handler to the custom backdrop element to dismiss the m
 
 ## Available animations
 
-Take a look at [react-native-animatable](https://github.com/oblador/react-native-animatable) to see the dozens of animations available out-of-the-box. You can also pass in custom animation definitions and have them automatically register with react-native-animatable. For more information on creating custom animations, see the react-native-animatable [animation definition schema](https://github.com/oblador/react-native-animatable#animation-definition-schema).
+This library uses `react-native-reanimated` for animations. The following animations are supported out-of-the-box (via string names):
+
+- `slideInDown` / `slideOutDown`
+- `slideInUp` / `slideOutUp`
+- `slideInLeft` / `slideOutLeft`
+- `slideInRight` / `slideOutRight`
+- `fadeIn` / `fadeOut`
+- `zoomIn` / `zoomOut`
+
+You can also pass a custom animation object compatible with Reanimated's `entering` / `exiting` props (e.g., `Keyframe` or animation builders like `FadeIn.duration(500)`).
+
+```javascript
+import { FadeIn, FadeOut } from 'react-native-reanimated';
+
+<Modal
+  animationIn={FadeIn.duration(500)}
+  animationOut={FadeOut.duration(500)}
+  ...
+>
+```
 
 ## Alternatives
 

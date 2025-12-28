@@ -1,83 +1,73 @@
 import { Dimensions } from 'react-native';
-import * as animatable from 'react-native-animatable';
-import { Animation, CustomAnimation } from 'react-native-animatable';
-import { Animations } from './types';
+import {
+  FadeIn,
+  FadeOut,
+  SlideInDown,
+  SlideInUp,
+  SlideInLeft,
+  SlideInRight,
+  SlideOutDown,
+  SlideOutUp,
+  SlideOutLeft,
+  SlideOutRight,
+  ZoomIn,
+  ZoomOut,
+  Keyframe,
+  ComplexAnimationBuilder,
+} from 'react-native-reanimated';
 
 const { height, width } = Dimensions.get('window');
 
-export const initializeAnimations = () => {
-  // Since react-native-animatable applies by default a margin of 100 to its
-  // sliding animation, we reset them here overriding the margin to 0.
-  const animationDefinitions: Record<string, CustomAnimation> = {
-    slideInDown: makeSlideTranslation('translateY', -height, 0),
-    slideInUp: makeSlideTranslation('translateY', height, 0),
-    slideInLeft: makeSlideTranslation('translateX', -width, 0),
-    slideInRight: makeSlideTranslation('translateX', width, 0),
-    slideOutDown: makeSlideTranslation('translateY', 0, height),
-    slideOutUp: makeSlideTranslation('translateY', 0, -height),
-    slideOutLeft: makeSlideTranslation('translateX', 0, -width),
-    slideOutRight: makeSlideTranslation('translateX', 0, width),
-  };
-
-  animatable.initializeRegistryWithDefinitions(animationDefinitions);
+const ANIMATION_MAP: Record<string, any> = {
+  slideInDown: SlideInDown,
+  slideInUp: SlideInUp,
+  slideInLeft: SlideInLeft,
+  slideInRight: SlideInRight,
+  slideOutDown: SlideOutDown,
+  slideOutUp: SlideOutUp,
+  slideOutLeft: SlideOutLeft,
+  slideOutRight: SlideOutRight,
+  fadeIn: FadeIn,
+  fadeOut: FadeOut,
+  zoomIn: ZoomIn,
+  zoomOut: ZoomOut,
 };
 
-export const makeSlideTranslation = (
-  translationType: string,
-  fromValue: number,
-  toValue: number,
-) => ({
-  from: {
-    [translationType]: fromValue,
-  },
-  to: {
-    [translationType]: toValue,
-  },
-});
+export const initializeAnimations = () => {
+  // No-op for Reanimated
+};
 
-// User can define custom react-native-animatable animations, see PR #72
-// Utility for creating our own custom react-native-animatable animations
 export const buildAnimations = ({
   animationIn,
   animationOut,
 }: {
-  animationIn: Animation | CustomAnimation;
-  animationOut: Animation | CustomAnimation;
-}): Animations => {
-  let updatedAnimationIn: string;
-  let updatedAnimationOut: string;
-
-  if (isObject(animationIn)) {
-    const animationName = JSON.stringify(animationIn);
-    makeAnimation(animationName, animationIn as CustomAnimation);
-    updatedAnimationIn = animationName;
-  } else {
-    updatedAnimationIn = animationIn;
-  }
-
-  if (isObject(animationOut)) {
-    const animationName = JSON.stringify(animationOut);
-    makeAnimation(animationName, animationOut as CustomAnimation);
-    updatedAnimationOut = animationName;
-  } else {
-    updatedAnimationOut = animationOut;
-  }
-
+  animationIn: any;
+  animationOut: any;
+}) => {
   return {
-    animationIn: updatedAnimationIn,
-    animationOut: updatedAnimationOut,
+    animationIn,
+    animationOut,
   };
 };
 
 export const reversePercentage = (x: number) => -(x - 1);
 
-const makeAnimation = (name: string, obj: CustomAnimation): void => {
-  animatable.registerAnimation(
-    name,
-    animatable.createAnimation(obj) as CustomAnimation,
-  );
-};
+export const getAnimation = (
+  animation: string | object,
+  type: 'in' | 'out',
+): ComplexAnimationBuilder | any => {
+  if (typeof animation === 'string') {
+    const AnimationConstructor = ANIMATION_MAP[animation];
+    if (AnimationConstructor) {
+      return AnimationConstructor;
+    }
+    // Fallback
+    return type === 'in' ? FadeIn : FadeOut;
+  }
 
-const isObject = (obj: any): obj is Object => {
-  return obj !== null && typeof obj === 'object';
+  if (typeof animation === 'object' && animation !== null) {
+    return new Keyframe(animation as any);
+  }
+
+  return type === 'in' ? FadeIn : FadeOut;
 };
